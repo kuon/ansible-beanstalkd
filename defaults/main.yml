@@ -1,0 +1,2 @@
+---
+beanstalkd_wal_dir: /srv/beanstalk/wal

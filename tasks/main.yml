@@ -1,0 +1,43 @@
+- name: Is beanstalkd installed
+  command: which beanstalkd
+  ignore_errors: true
+  register: result
+
+- name: Install compiler packages
+  yum: name={{ item }}
+  with_items:
+  - make
+  - gcc
+  - tar
+  - bzip2
+  - patch
+  - gcc-c++
+  - lzop
+  when: result|failed
+
+
+- name: Git clone beanstalkd
+  command: git clone git://github.com/kr/beanstalkd.git
+  args:
+    chdir: /tmp
+  when: result|failed
+
+- name: Compile beanstalkd
+  command: make install PREFIX=/usr
+  args:
+    chdir: /tmp/beanstalkd
+  when: result|failed
+
+- name: Create beanstalk user
+  user: name=beanstalk
+
+- name: Create wal directory
+  file: path={{ beanstalkd_wal_dir }} state=directory owner=beanstalk
+
+
+- name: Service file
+  template: dest=/etc/systemd/system/beanstalkd.service src=beanstalkd.service.j2
+
+- name: Enable service
+  service: name=beanstalkd state=running enabled=yes
+
