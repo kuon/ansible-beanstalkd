@@ -1,7 +1,7 @@
-Role Name
-=========
+Beanstalkd
+==========
 
-A brief description of the role goes here.
+Install beanstald
 
 Requirements
 ------------
